@@ -41,7 +41,7 @@ But when you replace your struggle with copy-paste from ChatGPT, you're trading 
 
 ## The alternative:
 
-In our lab seminars and schools like  [https://www.jass.school/](JASS) , we deliberately create situations where you can't just get the answer. Where you have to push through yourself. And you know what? People thank us specifically for this — for the right and opportunity to struggle and win.
+In our lab seminars and schools like  [JASS](https://www.jass.school) , we deliberately create situations where you can't just get the answer. Where you have to push through yourself. And you know what? People thank us specifically for this — for the right and opportunity to struggle and win.
 
 Productive struggle isn't teacher sadism. It's the only way to grow. GPT can give you the answer, but it can't give you the experience of overcoming.
 
