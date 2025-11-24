@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 const filterButtons = document.querySelectorAll('.filter-buttons button');
-const projectCards = document.querySelectorAll('.project-card');
+const projectCards = document.querySelectorAll('.blog-card');
 
 filterButtons.forEach(button => {
     button.addEventListener('click', () => {
