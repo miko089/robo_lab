@@ -1,7 +1,5 @@
-# My vision of post
-
-## **But what's async anyway?**
-### Intro
+# **But what's async anyway?**
+## Intro
 Imagine a simple program whose job is to periodically send
 requests to server1 and server2. The delay before the next
 request is determined by the previous response; if you stop
@@ -58,7 +56,7 @@ It will become clearer in a moment. And even if you've written
 something like that, you might not fully understand what does it
 mean and how is it implemented, so let's talk about it!
 
-### Building intuition
+## Building intuition
 So, let's firstly think, what we want from our code. Obvious goal is
 "One function should be able to work while other is sleeping".
 But our functions have variables with same exact name! Won't this
@@ -205,7 +203,7 @@ propagate through your codebase. This phenomenon is called
 multiple languages and is a design choice, not a bug. Wonder, how
 can you deal with it? Accept.
 
-### Conclusion
+## Conclusion
 Obviously, our implementation of event loop is not ideal, it lacks
 proper error handling, not very optimal, doesn't include implementation
 of real-world state machine for functions etc., but I hope the process
