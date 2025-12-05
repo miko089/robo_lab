@@ -18,6 +18,7 @@ def main(addr1, addr2):
     send_to_server(addr2)
 ```
 
+### Why this approach fails
 Looks fine and your computer is safe, isn't it?
 Not at all, because first `send_to_server` will
 single-handedly occupy whole thread of execution forever and you'll
@@ -27,6 +28,7 @@ think about using several threads of execution
 (and it'll definetly work), but I can show you a way of reaching the
 same goal within **single** thread.
 
+### A naive async solution
 If you know some python, you might immediatly come with
 such beautiful solution:
 ```python
@@ -57,6 +59,7 @@ something like that, you might not fully understand what does it
 mean and how is it implemented, so let's talk about it!
 
 ## Building intuition
+### The goal of async
 So, let's firstly think, what we want from our code. Obvious goal is
 "One function should be able to work while other is sleeping".
 But our functions have variables with same exact name! Won't this
@@ -74,6 +77,8 @@ mark this places with `await` keyword):
     },
 }
 ```
+
+### Introducing the runtime
 Okay, our function's states are safe, but how will we know, when
 some function should be called? We have finite amount of tasks,
 that should be continued at some point and each of those have same
@@ -89,6 +94,7 @@ class Runtime:
     ... # <some functions, that we will use later and which are trivial>
 ```
 
+### Designing the event loop
 And now, as we have `Runtime`, lets try to design our own loop!
 > Remark: basically, when we use `await`, function
 saves it's state and "jumps" to loop
@@ -101,12 +107,12 @@ while True:
     while runtime.tasks_ready_to_continue:
         task = runtime.tasks_ready_to_continue.pop()
         runtime.continue_executing(task)
-    
+
 
     # but what if there are no tasks?
     closest_timer = min(runtime.timers)
     time_left  = closest_timer[0] - time.now()
-    
+
     time.sleep(max(0, time_left)) # thread can sleep without hesitation
 
     timers = []
@@ -118,6 +124,8 @@ while True:
         timers.append(timer)
     runtime.timers = timers       
 ```
+
+### The problem with blocking calls
 This solves the ‘sleep’ part, but we still have a problem:
 the HTTP request itself is blocking. While `http.request` is
 running, the whole thread is stuck and no other coroutine can
@@ -133,6 +141,7 @@ async def send_to_server(addr):
         time_before_next_request = int(resp.data)
 ```
 
+### Supporting non-timer events
 But our loop (for now!) has no way to work with non-timer events.
 In Linux, exists api called `epoll`
 (MacOS has `kqueue` and Windows has `IOCP`, that does
@@ -144,7 +153,7 @@ or written to?". Function answering to that question is
 called `epoll_wait`. You don't need to understand how `epoll` is
 implemented, just remember what it's function is.
 
-
+### Finalizing the event loop
 Now, with that in mind, let's add support for non-timer operations! 
 
 ```python
@@ -152,7 +161,7 @@ while True:
     while runtime.tasks_ready_to_continue:
         task = runtime.tasks_ready_to_continue.pop()
         runtime.continue_executing(task)
-    
+
     closest_timer = min(runtime.timers)
     time_left     = closest_timer[0] - time.now()
 
@@ -183,6 +192,8 @@ while True:
         runtime.tasks_ready_to_continue.insert(0, ev.data)
         epoll_remove(ev) # as we already got what we wanted
 ```
+
+### When async is useful
 And that's final version of our `event loop`! It handles multiple
 tasks at once, can work with timers and keep your computer safe in
 case of very specific and unrealistic problem, that almost certainly
@@ -193,6 +204,7 @@ threads that can handle multiple requests at any time are cooler!
 - Background processing of external program 
 - Many other things
 
+### Function coloring problem
 If you've read carefully, you might have noticed a problem: `await`
 can be used only in `async` function, because any other function
 doesn't have state, that saved somewhere. That means you can’t
